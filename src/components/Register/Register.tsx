@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 interface FormValues {
   email: string;
   password: string;
-  phoneNo: string;
+  phoneNumber: string;
   firstName: string;
   lastName: string;
   dob: string;
@@ -25,7 +25,7 @@ const Register: React.FC = () => {
     initialValues: {
       email: '',
       password: '',
-      phoneNo: '',
+      phoneNumber: '',
       firstName: '',
       lastName: '',
       dob: '',
@@ -37,16 +37,23 @@ const Register: React.FC = () => {
     },
     validationSchema: Yup.object({
       email: Yup.string().email('Invalid email address').required('Required'),
-      password: Yup.string().required('Required').min(6, 'Password must be at least 6 characters'),
-      phoneNo: Yup.string().required('Required'),
-      firstName: Yup.string().required('Required'),
-      lastName: Yup.string().required('Required'),
-      dob: Yup.string().required('Required'),
-      flat: Yup.string().required('Required'),
-      street: Yup.string().required('Required'),
-      city: Yup.string().required('Required'),
-      country: Yup.string().required('Required'),
-      zipcode: Yup.string().required('Required'),
+      password: Yup.string().required('Password is Required').min(6, 'Password must be at least 6 characters'),
+       phoneNumber: Yup
+    .string()
+    .matches(/^\+?[0-9]{1,4}-?[0-9]{6,14}$/, 'Invalid phone number format')
+    .required('Phone number is required'),
+      firstName: Yup.string().required('First Name Required'),
+      lastName: Yup.string().required('Last Name Required'),
+       dob: Yup
+    .date()
+    .nullable()
+    .max(new Date(), 'Date of birth cannot be in the future')
+    .required('Date of birth is required'),
+      flat: Yup.string().required('Flat is Required'),
+      street: Yup.string().required('Street is Required'),
+      city: Yup.string().required('City is Required'),
+      country: Yup.string().required('Country is Required'),
+      zipcode: Yup.string().required('Zipcode is Required'),
     }),
     onSubmit: async (values) => {
       try {
@@ -82,9 +89,9 @@ const Register: React.FC = () => {
 
         <div>
           <label>Phone Number:</label>
-          <input type="text" {...formik.getFieldProps('phoneNo')} />
-          {formik.touched.phoneNo && formik.errors.phoneNo ? (
-            <div className="error">{formik.errors.phoneNo}</div>
+          <input type="text" {...formik.getFieldProps('phoneNumber')} />
+          {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+            <div className="error">{formik.errors.phoneNumber}</div>
           ) : null}
         </div>
 

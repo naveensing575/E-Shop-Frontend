@@ -3,7 +3,7 @@ import axios from 'axios';
 interface FormValues {
   email: string;
   password: string;
-  phoneNo: string;
+  phoneNumber: string;
   firstName: string;
   lastName: string;
   dob: string;
