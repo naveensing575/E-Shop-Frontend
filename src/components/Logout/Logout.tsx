@@ -4,23 +4,21 @@ import { useUser } from '../../contexts/userContext';
 
 const Logout: React.FC = () => {
   const navigate = useNavigate();
-  const { uid, clearUserInfo } = useUser();
+  const { logout } = useUser();
 
   const handleLogout = async () => {
     try {
-
+      const token = localStorage.getItem('authToken');
       const response = await fetch('http://localhost:4000/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ uid }),
       });
 
       if (response.ok) {
-        // Logout successful, clear user info and navigate to the login page
-        console.log('Loggged out successfully');
-        clearUserInfo();
+        logout();
         navigate('/login');
       } else {
         // Handle error cases

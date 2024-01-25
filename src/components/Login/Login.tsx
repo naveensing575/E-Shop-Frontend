@@ -13,7 +13,7 @@ const LoginSchema = Yup.object().shape({
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserInfo } = useUser();
+  const { login } = useUser();
 
   const handleLogin = async (values: any, actions: any) => {
     try {
@@ -24,33 +24,29 @@ const Login: React.FC = () => {
 
       // Get the ID token from the userCredential
       const user = userCredential.user;
-      const uid = user?.uid || '';
-      const displayName = user?.displayName ??'';
       const userEmail = user?.email ?? '';
 
       // Update user information using the context, including uid
-      updateUserInfo(uid, displayName, userEmail);
+      login(userEmail, await user?.getIdToken());
 
       // Send the ID token to the backend for further verification
       const response = await fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${await user?.getIdToken()}`,
         },
-        body: JSON.stringify({ idToken: await user?.getIdToken() }),
       });
 
       if (response.ok) {
         console.log("Logged in successfully");
         console.log(user);
-        // Redirect to /home
+        // Store the ID token in local storage (handled by the context)
         navigate("/home");
       } else {
         // Handle login error
         throw new Error("Invalid email or password");
       }
-
-      // Reset the form
       actions.resetForm();
     } catch (error) {
       // Handle login error
@@ -65,41 +61,45 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={LoginSchema}
-        onSubmit={handleLogin}
-      >
-        {(formikProps) => (
-          <Form className="login-form">
-            <label>Email:</label>
-            <Field type="email" name="email" required />
-            <ErrorMessage
-              name="email"
-              component="div"
-              className="error-message"
-            />
+    <div className="login-page">
+      <div className="form">
+        <h1>E-Shop</h1>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogin}
+        >
+          {(formikProps) => (
+            <Form className="form">
+              <div>
+                <Field type="email" name="email" className="form-input" required placeholder="Email"/>
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="error-message"
+                />
+              </div>
 
-            <label>Password:</label>
-            <Field type="password" name="password" required />
-            <ErrorMessage
-              name="password"
-              component="div"
-              className="error-message"
-            />
+              <div>
+                <Field type="password" name="password" className="form-input" required  placeholder="Password"/>
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="error-message"
+                />
+              </div>
 
-            <button type="submit" disabled={formikProps.isSubmitting}>
-              {formikProps.isSubmitting ? "Logging in..." : "Login"}
-            </button>
-          </Form>
-        )}
-      </Formik>
+              <button type="submit" className="form-button" disabled={formikProps.isSubmitting}>
+                {formikProps.isSubmitting ? "Logging in..." : "Login"}
+              </button>
+            </Form>
+          )}
+        </Formik>
 
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
+        <p>
+          Don't have an account? <Link to="/register">Register here</Link>
+        </p>
+      </div>
     </div>
   );
 };
