@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UserContextProps {
-  email?: string;
-  token?: string;
-  updateUserInfo: (email: string, token: string) => void;
+  user: {
+    name?: string;
+    email?: string;
+    token?: string;
+  };
+  updateUserInfo: (name: string, email: string, token: string) => void;
   logout: () => void;
-  login: (email: string, token: string) => void;
+  login: (name: string, email: string, token: string) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -15,30 +18,27 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [email, setEmail] = useState<string | undefined>(undefined);
-  const [token, setToken] = useState<string | undefined>(undefined);
+  const [user, setUser] = useState<{ name?: string; email?: string; token?: string }>({});
 
-  const updateUserInfo = (newEmail: string, newToken: string) => {
-    setEmail(newEmail);
-    setToken(newToken);
-    // Save token to localStorage
-    localStorage.setItem('authToken', newToken);
+  const updateUserInfo = (name: string, email: string, token: string) => {
+    const newUser = { name, email, token };
+    setUser(newUser);
+    // Save user info to localStorage
+    localStorage.setItem('userInfo', JSON.stringify(newUser));
   };
 
   const logout = () => {
-    setEmail(undefined);
-    setToken(undefined);
-    // Remove token from localStorage
-    localStorage.removeItem('authToken');
+    setUser({});
+    // Remove user info from localStorage
+    localStorage.removeItem('userInfo');
   };
 
-  const login = (newEmail: string, newToken: string) => {
-    updateUserInfo(newEmail, newToken);
+  const login = (name: string, email: string, token: string) => {
+    updateUserInfo(name, email, token);
   };
 
   const contextValue: UserContextProps = {
-    email,
-    token,
+    user,
     updateUserInfo,
     logout,
     login,

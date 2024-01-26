@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useUser } from "../../contexts/userContext";
+import { Container, Row, Col, Card, Form as BootstrapForm, Button } from "react-bootstrap";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -25,9 +26,10 @@ const Login: React.FC = () => {
       // Get the ID token from the userCredential
       const user = userCredential.user;
       const userEmail = user?.email ?? '';
+      const userName = user?.displayName ?? '';
 
       // Update user information using the context, including uid
-      login(userEmail, await user?.getIdToken());
+      login(userName, userEmail, await user?.getIdToken());
 
       // Send the ID token to the backend for further verification
       const response = await fetch("http://localhost:4000/login", {
@@ -61,46 +63,44 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="form">
-        <h1>E-Shop</h1>
-        <Formik
-          initialValues={{ email: "", password: "" }}
-          validationSchema={LoginSchema}
-          onSubmit={handleLogin}
-        >
-          {(formikProps) => (
-            <Form className="form">
-              <div>
-                <Field type="email" name="email" className="form-input" required placeholder="Email"/>
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="error-message"
-                />
-              </div>
+    <Container fluid className="h-100 mt-5">
+      <Row className="h-100 justify-content-center align-items-center">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <h1 className="text-center mb-4">E-Shop</h1>
+              <Formik
+                initialValues={{ email: "", password: "" }}
+                validationSchema={LoginSchema}
+                onSubmit={handleLogin}
+              >
+                {(formikProps) => (
+                  <Form>
+                    <div className="mb-3">
+                      <Field type="email" name="email" as={BootstrapForm.Control} placeholder="Email" />
+                      <ErrorMessage name="email" component="div" className="text-danger" />
+                    </div>
 
-              <div>
-                <Field type="password" name="password" className="form-input" required  placeholder="Password"/>
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="error-message"
-                />
-              </div>
+                    <div className="mb-3">
+                      <Field type="password" name="password" as={BootstrapForm.Control} placeholder="Password" />
+                      <ErrorMessage name="password" component="div" className="text-danger" />
+                    </div>
 
-              <button type="submit" className="form-button" disabled={formikProps.isSubmitting}>
-                {formikProps.isSubmitting ? "Logging in..." : "Login"}
-              </button>
-            </Form>
-          )}
-        </Formik>
+                    <Button type="submit" className="w-100" disabled={formikProps.isSubmitting}>
+                      {formikProps.isSubmitting ? "Logging in..." : "Login"}
+                    </Button>
+                  </Form>
+                )}
+              </Formik>
 
-        <p>
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
-      </div>
-    </div>
+              <p className="mt-3 text-center">
+                Don't have an account? <Link to="/register">Register here</Link>
+              </p>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

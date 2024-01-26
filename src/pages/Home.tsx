@@ -1,13 +1,13 @@
-import React from 'react'
-import Logout from '../components/Logout/Logout'
+import React from 'react';
+import { Container } from 'react-bootstrap';
+import ProductList from './ProductList';
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
-    <div>
-      Welcome to E-Shop 
-      <Logout/>
-    </div>
-  )
-}
+    <Container fluid>
+      <ProductList />
+    </Container>
+  );
+};
 
-export default Home
+export default Home;
