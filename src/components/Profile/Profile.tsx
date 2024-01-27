@@ -12,17 +12,18 @@ interface ProfileDropdownProps {
 const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userName, userEmail, onOrdersClick, onLogoutClick }) => {
   return (
     <Dropdown>
-      <Dropdown.Toggle as="div">
-        <div className="profile-icon">
-          <BsPersonFill />
-        </div>
+      <Dropdown.Toggle
+        as="div"
+        id="profile-toggle"
+      >
+        <BsPersonFill size={30} color="#007bff" />
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu className="mt-0 dropdown-menu-left">
         <Dropdown.Item>
-          <div>Name: {userName}</div>
+          {userName}
         </Dropdown.Item>
         <Dropdown.Item>
-          <div>Email: {userEmail}</div>
+          {userEmail}
         </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item onClick={onOrdersClick}>Orders</Dropdown.Item>

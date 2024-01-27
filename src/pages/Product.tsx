@@ -2,13 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Image } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BsArrowLeft } from 'react-icons/bs';
+import { BsArrowLeft, BsLightning, BsCartPlus } from 'react-icons/bs';
+import NoProductImage from '../assets/default.png';
+import ratingStars from '../utils/ratingStars';
+interface Review {
+  user: string;
+  comment: string;
+}
 
 interface ProductProps {
   productId: number;
   productName: string;
   productDescription: string;
+  image: string;
   price: number;
+  rating: number;
+  reviews: Review[];
 }
 
 const Product: React.FC = () => {
@@ -18,8 +27,8 @@ const Product: React.FC = () => {
 
   const fetchProductDetails = async () => {
     try {
-      // Ensure that the authentication token is included in the request headers
-      const authToken = localStorage.getItem('authToken');
+      const userInfo = localStorage.getItem('userInfo');
+      const authToken = userInfo ? JSON.parse(userInfo).token : null;
       const response = await axios.get<ProductProps>(`http://localhost:4000/products/${id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -41,7 +50,7 @@ const Product: React.FC = () => {
   }, [id]);
 
   const goBack = () => {
-    navigate(-1); // Equivalent to history.goBack()
+    navigate(-1);
   };
 
   return (
@@ -49,17 +58,36 @@ const Product: React.FC = () => {
       {productDetails ? (
         <>
           <Row>
+            <div className='mb-4'>
+                <Button variant="light" onClick={goBack}>
+                <BsArrowLeft className="pr-2" />
+                Go Back
+              </Button>
+            </div>
             <Col md={6}>
-              <Image src="https://via.placeholder.com/400" alt="Product" fluid />
+              <Image src={productDetails?.image || NoProductImage} alt="Product" fluid />
             </Col>
             <Col md={6}>
               <h2>{productDetails.productName}</h2>
               <p>{productDetails.productDescription}</p>
               <p>Price: ${productDetails.price}</p>
-              <Button variant="primary" className="mr-2">
-                View Details
+              <div className='inline-flex'>
+                <p className="mr-2">Rating: {productDetails.rating}  {ratingStars(productDetails.rating)}</p>
+              </div>
+              <p>Reviews:</p>
+              <ul>
+                {productDetails.reviews.map((review, index) => (
+                  <li key={index}>
+                    <strong>{review.user}:</strong> {review.comment}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="warning" className="d-flex align-items-center mb-3" >
+                <BsLightning className="mr-2" />
+                Buy Now
               </Button>
-              <Button variant="success">
+              <Button variant="success" className='d-flex align-items-center'>
+                <BsCartPlus className="mr-2" />
                 Add to Cart
               </Button>
             </Col>
@@ -68,12 +96,6 @@ const Product: React.FC = () => {
       ) : (
         <p>Loading...</p>
       )}
-      <div className="mt-3">
-        <Button variant="light" onClick={goBack}>
-          <BsArrowLeft className="mr-2" />
-          Go Back
-        </Button>
-      </div>
     </Container>
   );
 };

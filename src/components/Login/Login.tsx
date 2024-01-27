@@ -26,7 +26,7 @@ const Login: React.FC = () => {
       // Get the ID token from the userCredential
       const user = userCredential.user;
       const userEmail = user?.email ?? '';
-      const userName = user?.displayName ?? '';
+      const userName = user?.email?.trimEnd()?.split('@')[0] ?? '';
 
       // Update user information using the context, including uid
       login(userName, userEmail, await user?.getIdToken());

@@ -4,17 +4,18 @@ import Login from '../components/Login/Login';
 import Register from '../components/Register/Register';
 import Logout from '../components/Logout/Logout';
 import Home from '../pages/Home';
-import ProductList from '../pages/ProductList';
 import Product from '../pages/Product';
 import NavigationBar from '../components/Navbar/Navbar';
 
-// Sample authentication check
 const isAuthenticated = () => {
-  // Add your authentication logic here
-  // For example, check if the user is logged in by verifying a token in local storage
-  const token = localStorage.getItem('authToken');
-  return !!token; // Return true if authenticated, false otherwise
+  const userInfoString = localStorage.getItem('userInfo');
+  if (userInfoString) {
+    const userInfo = JSON.parse(userInfoString);
+    return !!userInfo.token;
+  }
+  return false;
 };
+
 
 const PrivateRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
   return isAuthenticated() ? (
@@ -29,8 +30,7 @@ const AuthenticatedRoutes: React.FC = () => (
     <NavigationBar />
     <Routes>
       <Route path="/home" element={<PrivateRoute element={<Home />} />} />
-      <Route path="/products" element={<PrivateRoute element={<ProductList />} />} />
-      <Route path="/product/:id" element={<PrivateRoute element={<Product />} />} />
+      <Route path="/products/:id" element={<PrivateRoute element={<Product />} />} />
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   </>
