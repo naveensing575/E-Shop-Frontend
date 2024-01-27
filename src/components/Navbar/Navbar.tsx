@@ -7,9 +7,11 @@ import ProfileDropdown from '../Profile/Profile';
 import { useUser } from '../../contexts/userContext';
 
 const NavigationBar: React.FC = () => {
-  const { user, logout } = useUser();
+  const { logout } = useUser();
   const navigate = useNavigate();
   const userInfo = localStorage.getItem('userInfo');
+  const userName = userInfo ? JSON.parse(userInfo).name : 'Guest';
+  const userEmail = userInfo ? JSON.parse(userInfo).email : 'Guest@gmail.com';
   const token = userInfo ? JSON.parse(userInfo).token : null;
 
 
@@ -47,8 +49,8 @@ const NavigationBar: React.FC = () => {
             </Nav.Link>
             {token ? (
               <ProfileDropdown
-                userName={user.name || 'Guest'}
-                userEmail={user.email || 'Guest@gmail.com'}
+                userName={ userName }
+                userEmail={ userEmail }
                 onOrdersClick={handleOrdersClick}
                 onLogoutClick={handleLogoutClick}
               />

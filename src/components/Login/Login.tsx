@@ -28,10 +28,8 @@ const Login: React.FC = () => {
       const userEmail = user?.email ?? '';
       const userName = user?.email?.trimEnd()?.split('@')[0] ?? '';
 
-      // Update user information using the context, including uid
       login(userName, userEmail, await user?.getIdToken());
 
-      // Send the ID token to the backend for further verification
       const response = await fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
@@ -41,23 +39,15 @@ const Login: React.FC = () => {
       });
 
       if (response.ok) {
-        console.log("Logged in successfully");
-        console.log(user);
-        // Store the ID token in local storage (handled by the context)
         navigate("/home");
       } else {
-        // Handle login error
         throw new Error("Invalid email or password");
       }
       actions.resetForm();
     } catch (error) {
-      // Handle login error
       console.error("Login error:", error);
-
-      // Set a custom error message in the form
       actions.setFieldError("password", "Invalid email or password");
     } finally {
-      // Set submitting to false to enable the form button
       actions.setSubmitting(false);
     }
   };

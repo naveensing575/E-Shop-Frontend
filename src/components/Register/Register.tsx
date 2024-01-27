@@ -155,6 +155,9 @@ const Register: React.FC = () => {
               {formik.isSubmitting ? 'Registering...' : 'Register'}
             </Button>
           </Form>
+           <p className="mt-3">
+                Already have an account? <a href="/login">Login here</a>
+            </p>
            <ToastComponent
             show={showToast}
             onClose={() => setShowToast(false)}

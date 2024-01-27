@@ -32,7 +32,7 @@ const ToastComponent: React.FC<ToastComponentProps> = ({ show, onClose, delay = 
           &times;
         </h4>
       </Toast.Header>
-      <Toast.Body>{body}</Toast.Body>
+      <Toast.Body color='white'>{body}</Toast.Body>
     </Toast>
   );
 };

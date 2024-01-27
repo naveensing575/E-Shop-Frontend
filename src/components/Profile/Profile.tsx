@@ -18,9 +18,9 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userName, userEmail, 
       >
         <BsPersonFill size={30} color="#007bff" />
       </Dropdown.Toggle>
-      <Dropdown.Menu className="mt-0 dropdown-menu-left">
+      <Dropdown.Menu className="mt-0">
         <Dropdown.Item>
-          {userName}
+          Hi👋 {userName}
         </Dropdown.Item>
         <Dropdown.Item>
           {userEmail}

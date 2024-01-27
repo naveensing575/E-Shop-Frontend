@@ -8,6 +8,10 @@
   padding: 0 !important;
 }
 
+.dropdown-menu[data-bs-popper] {
+  left: -170px !important;
+  font-family: cursive;
+}
 #profile-toggle{
   text-decoration: none;
   display: flex;
@@ -60,3 +64,4 @@
 .text-blue {
   color: blue;
 }
+

@@ -13,7 +13,7 @@ interface Review {
 interface ProductProps {
   productId: number;
   productName: string;
-  productDescription: string;
+  productDetails: string;
   image: string;
   price: number;
   rating: number;
@@ -64,12 +64,14 @@ const Product: React.FC = () => {
                 Go Back
               </Button>
             </div>
-            <Col md={6}>
-              <Image src={productDetails?.image || NoProductImage} alt="Product" fluid />
+            <Col md={1}/>
+            <Col md={4} className='text-center'>
+            <Image src={productDetails?.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3'/>
             </Col>
-            <Col md={6}>
+             <Col md={1}/>
+            <Col md={5}>
               <h2>{productDetails.productName}</h2>
-              <p>{productDetails.productDescription}</p>
+              <p>{productDetails.productDetails}</p>
               <p>Price: ${productDetails.price}</p>
               <div className='inline-flex'>
                 <p className="mr-2">Rating: {productDetails.rating}  {ratingStars(productDetails.rating)}</p>
@@ -91,6 +93,7 @@ const Product: React.FC = () => {
                 Add to Cart
               </Button>
             </Col>
+            <Col md={1}/>
           </Row>
         </>
       ) : (

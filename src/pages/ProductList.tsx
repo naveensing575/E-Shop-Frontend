@@ -58,7 +58,7 @@ const ProductList: React.FC = () => {
                 src={product?.image || NoProductImage}
                 alt="Product"
                 className="card-image"
-                 onClick={() => handleProductDetails(product.productId)}
+                onClick={() => handleProductDetails(product.productId)}
               />
               <Card.Body className='card-body'  onClick={() => handleProductDetails(product.productId)}>
                 <Card.Title>{product.productName}</Card.Title>
@@ -71,7 +71,7 @@ const ProductList: React.FC = () => {
                   className="w-0 p-2 d-flex align-items-center"
                   onClick={() => handleBuyNow(product.productId)}
                 >
-                  <BsLightning className="mr-2" />
+                  <BsLightning className='mr-1'/>
                   Buy Now
                 </Button>
                 <Button
@@ -79,7 +79,7 @@ const ProductList: React.FC = () => {
                   className="w-0 p-2 d-flex align-items-center"
                   onClick={() => handleAddToCart(product.productId)}
                 >
-                  <BsCartPlus className="mr-2" />
+                  <BsCartPlus className='mr-1'/>
                   Add to Cart
                 </Button>
               </Card.Footer>
