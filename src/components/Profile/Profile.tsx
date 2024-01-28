@@ -5,11 +5,14 @@ import { BsPersonFill } from 'react-icons/bs';
 interface ProfileDropdownProps {
   userName: string;
   userEmail: string;
-  onOrdersClick: () => void;
   onLogoutClick: () => void;
 }
 
-const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userName, userEmail, onOrdersClick, onLogoutClick }) => {
+const onOrdersClick = () => {
+  window.location.href = '/orders';
+};
+
+const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userName, userEmail, onLogoutClick }) => {
   return (
     <Dropdown>
       <Dropdown.Toggle

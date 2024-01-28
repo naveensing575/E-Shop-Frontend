@@ -18,10 +18,6 @@ const NavigationBar: React.FC = () => {
   const userEmail = userInfo ? JSON.parse(userInfo).email : 'Guest@gmail.com';
   const token = userInfo ? JSON.parse(userInfo).token : null;
 
-  const handleOrdersClick = () => {
-    console.log('Orders clicked');
-  };
-
   const handleLogoutClick = () => {
     logout();
     navigate('/login');
@@ -66,7 +62,6 @@ const NavigationBar: React.FC = () => {
               <ProfileDropdown
                 userName={ userName }
                 userEmail={ userEmail }
-                onOrdersClick={handleOrdersClick}
                 onLogoutClick={handleLogoutClick}
               />
             ) : (

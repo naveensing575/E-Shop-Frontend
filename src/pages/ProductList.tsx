@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Image } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Image, Alert } from 'react-bootstrap'; // Import Alert component
 import { BsCartPlus, BsLightning } from 'react-icons/bs';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -48,7 +48,7 @@ const ProductList: React.FC = () => {
     };
 
     filterProducts();
-  }, [searchQuery, products]); // Update filtered products when the search query or products change
+  }, [searchQuery, products]);
 
   const handleBuyNow = (productId: number) => {
     console.log('Buy now clicked for product:', productId);
@@ -65,8 +65,11 @@ const ProductList: React.FC = () => {
   return (
     <Container>
       <h2 className="mt-3 font">Today's Deals</h2>
+      {filteredProducts.length === 0 && ( // Conditionally render message if no products found
+        <Alert variant="info">No products found for "{searchQuery}"</Alert>
+      )}
       <Row xs={1} md={2} lg={3} xl={4}>
-        {filteredProducts.map((product) => ( 
+        {filteredProducts.map((product) => (
           <Col key={product.productId} className="mb-4">
             <Card className="product-card">
               <Image
