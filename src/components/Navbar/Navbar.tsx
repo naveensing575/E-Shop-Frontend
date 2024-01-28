@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar, Nav, Form, FormControl, Button, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { BsCartPlus } from 'react-icons/bs';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MdSearch } from 'react-icons/md';
+import { BsCartPlus } from 'react-icons/bs';
 import ProfileDropdown from '../Profile/Profile';
 import { useUser } from '../../contexts/userContext';
 
 const NavigationBar: React.FC = () => {
   const { logout } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchQuery = queryParams.get('search') || '';
+  const [searchValue, setSearchValue] = useState(searchQuery);
   const userInfo = localStorage.getItem('userInfo');
   const userName = userInfo ? JSON.parse(userInfo).name : 'Guest';
   const userEmail = userInfo ? JSON.parse(userInfo).email : 'Guest@gmail.com';
   const token = userInfo ? JSON.parse(userInfo).token : null;
-
 
   const handleOrdersClick = () => {
     console.log('Orders clicked');
@@ -22,6 +25,12 @@ const NavigationBar: React.FC = () => {
   const handleLogoutClick = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    queryParams.set('search', e.target.value);
+    navigate(`${location.pathname}?${queryParams.toString()}`);
   };
 
   return (
@@ -38,7 +47,13 @@ const NavigationBar: React.FC = () => {
             </Nav.Link>
           </Nav>
           <Form className="mx-auto d-flex">
-            <FormControl type="text" placeholder="Search" className="px-4 rounded-pill border-0" />
+            <FormControl 
+              type="text" 
+              placeholder="Search" 
+              className="px-4 rounded-pill border-0" 
+              value={searchValue}
+              onChange={handleSearchInputChange}
+            />
             <Button variant="outline-primary" className="mx-2 rounded-pill border-0">
               <MdSearch size={20}/>
             </Button>

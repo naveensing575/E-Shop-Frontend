@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Image } from 'react-bootstrap';
 import { BsCartPlus, BsLightning } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import NoProductImage from '../assets/default.png';
 
@@ -15,7 +15,11 @@ interface Product {
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchQuery = queryParams.get('search') || '';
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,6 +39,17 @@ const ProductList: React.FC = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const filterProducts = () => {
+      const filteredProducts = products.filter((product) => 
+        product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProducts(filteredProducts);
+    };
+
+    filterProducts();
+  }, [searchQuery, products]); // Update filtered products when the search query or products change
+
   const handleBuyNow = (productId: number) => {
     console.log('Buy now clicked for product:', productId);
   };
@@ -51,7 +66,7 @@ const ProductList: React.FC = () => {
     <Container>
       <h2 className="mt-3 font">Today's Deals</h2>
       <Row xs={1} md={2} lg={3} xl={4}>
-        {products.map((product) => (
+        {filteredProducts.map((product) => ( 
           <Col key={product.productId} className="mb-4">
             <Card className="product-card">
               <Image
