@@ -6,6 +6,7 @@ import Logout from '../components/Logout/Logout';
 import Home from '../pages/Home';
 import Product from '../pages/Product';
 import NavigationBar from '../components/Navbar/Navbar';
+import Categories from '../pages/Categories';
 
 const isAuthenticated = () => {
   const userInfoString = localStorage.getItem('userInfo');
@@ -31,6 +32,7 @@ const AuthenticatedRoutes: React.FC = () => (
     <Routes>
       <Route path="/home" element={<PrivateRoute element={<Home />} />} />
       <Route path="/products/:id" element={<PrivateRoute element={<Product />} />} />
+      <Route path='/categories' element={<PrivateRoute element={<Categories />} />} />
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   </>

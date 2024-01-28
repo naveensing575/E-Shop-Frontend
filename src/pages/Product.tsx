@@ -5,6 +5,8 @@ import axios from 'axios';
 import { BsArrowLeft, BsLightning, BsCartPlus } from 'react-icons/bs';
 import NoProductImage from '../assets/default.png';
 import ratingStars from '../utils/ratingStars';
+import Loader from '../components/Loader/Loader';
+
 interface Review {
   user: string;
   comment: string;
@@ -24,6 +26,7 @@ const Product: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [productDetails, setProductDetails] = useState<ProductProps | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProductDetails = async () => {
     try {
@@ -42,6 +45,8 @@ const Product: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching product details:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,7 +60,9 @@ const Product: React.FC = () => {
 
   return (
     <Container className="mt-3">
-      {productDetails ? (
+      {loading ? (
+        <Loader />
+      ) : productDetails ? (
         <>
           <Row>
             <div className='mb-4'>
@@ -95,7 +102,7 @@ const Product: React.FC = () => {
           </Row>
         </>
       ) : (
-        <p>Loading...</p>
+        <p>No product found</p>
       )}
     </Container>
   );
