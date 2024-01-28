@@ -73,9 +73,7 @@ const Product: React.FC = () => {
               <h2>{productDetails.productName}</h2>
               <p>{productDetails.productDetails}</p>
               <p>Price: ${productDetails.price}</p>
-              <div className='inline-flex'>
-                <p className="mr-2">Rating: {productDetails.rating}  {ratingStars(productDetails.rating)}</p>
-              </div>
+              <p className="mr-2">Rating: {productDetails.rating}  {ratingStars(productDetails.rating)}</p>
               <p>Reviews:</p>
               <ul>
                 {productDetails.reviews.map((review, index) => (
