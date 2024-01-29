@@ -54,7 +54,7 @@ const NavigationBar: React.FC = () => {
                 value={searchValue}
                 onChange={handleSearchInputChange}
               />
-              <Button variant="outline-primary" className="mx-2 rounded-pill border-0">
+              <Button variant="outline-primary" className="mx-2 rounded-pill border-0" onClick={(e) => e.preventDefault()}>
                 <MdSearch size={20}/>
               </Button>
             </Form>

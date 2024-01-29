@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Image } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BsArrowLeft, BsLightning, BsCartPlus } from 'react-icons/bs';
+import { BsArrowLeft } from 'react-icons/bs';
 import NoProductImage from '../assets/default.png';
 import ratingStars from '../utils/ratingStars';
 import Loader from '../components/Loader/Loader';
+import CartButton from '../components/Cart/CartButton';
 
 interface Review {
   user: string;
@@ -27,6 +28,7 @@ const Product: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [productDetails, setProductDetails] = useState<ProductProps | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [cartQuantity, setCartQuantity] = useState<number>(0);
 
   const fetchProductDetails = async () => {
     try {
@@ -58,6 +60,20 @@ const Product: React.FC = () => {
     navigate('/products');
   };
 
+  const onAdd = () => {
+    setCartQuantity(cartQuantity + 1);
+  };
+
+  const onRemove = () => {
+    if (cartQuantity > 0) {
+      setCartQuantity(cartQuantity - 1);
+    }
+  };
+
+  const onDelete = () => {
+    setCartQuantity(0);
+  };
+
   return (
     <Container className="mt-3">
       {loading ? (
@@ -73,7 +89,7 @@ const Product: React.FC = () => {
             </div>
             <Col md={1}/>
             <Col md={4} className='text-center'>
-            <Image src={productDetails?.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3'/>
+              <Image src={productDetails?.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3'/>
             </Col>
              <Col md={1}/>
             <Col md={5}>
@@ -89,14 +105,13 @@ const Product: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              <Button variant="warning" className="d-flex align-items-center mb-3" >
-                <BsLightning className="mr-2" />
-                Buy Now
-              </Button>
-              <Button variant="success" className='d-flex align-items-center'>
-                <BsCartPlus className="mr-2" />
-                Add to Cart
-              </Button>
+              <CartButton
+                initialQuantity={cartQuantity}
+                onAdd={onAdd}
+                onRemove={onRemove}
+                onDelete={onDelete}
+                isProductRoute={true}
+              />
             </Col>
             <Col md={1}/>
           </Row>
