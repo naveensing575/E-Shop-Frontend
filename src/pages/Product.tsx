@@ -55,7 +55,7 @@ const Product: React.FC = () => {
   }, [id]);
 
   const goBack = () => {
-    navigate(-1);
+    navigate('/products');
   };
 
   return (

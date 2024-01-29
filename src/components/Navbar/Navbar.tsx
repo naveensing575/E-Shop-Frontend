@@ -29,6 +29,9 @@ const NavigationBar: React.FC = () => {
     navigate(`${location.pathname}?${queryParams.toString()}`);
   };
 
+  // Check if the current route contains "/home" and "/products"
+  const isProductRoute = location.pathname.includes('/home') || location.pathname.includes('/products');
+
   return (
     <Container fluid>
       <Navbar bg="light" expand="lg" className="px-3">
@@ -42,18 +45,20 @@ const NavigationBar: React.FC = () => {
               Categories
             </Nav.Link>
           </Nav>
-          <Form className="mx-auto d-flex">
-            <FormControl 
-              type="text" 
-              placeholder="Search" 
-              className="px-4 rounded-pill border-0" 
-              value={searchValue}
-              onChange={handleSearchInputChange}
-            />
-            <Button variant="outline-primary" className="mx-2 rounded-pill border-0">
-              <MdSearch size={20}/>
-            </Button>
-          </Form>
+          {isProductRoute && (
+            <Form className="mx-auto d-flex">
+              <FormControl 
+                type="text" 
+                placeholder="Search" 
+                className="px-4 rounded-pill border-0" 
+                value={searchValue}
+                onChange={handleSearchInputChange}
+              />
+              <Button variant="outline-primary" className="mx-2 rounded-pill border-0">
+                <MdSearch size={20}/>
+              </Button>
+            </Form>
+          )}
           <Nav className="ml-auto">
             <Nav.Link as={Link} to="/cart" className="cart">
               <BsCartPlus size={20} /> Cart

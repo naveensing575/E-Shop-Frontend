@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Image, Alert } from 'react-bootstrap';
-import { BsCartPlus, BsLightning } from 'react-icons/bs';
+import { BsCartPlus } from 'react-icons/bs';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import NoProductImage from '../assets/default.png';
@@ -25,7 +25,7 @@ const ProductList: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const searchQuery = queryParams.get('search') || '';
+  const searchQuery = queryParams.get('search') ?? '';
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -88,10 +88,6 @@ const ProductList: React.FC = () => {
     filterAndSortProducts();
   }, [products, searchQuery, sortCriteria]);
 
-  const handleBuyNow = (productId: number) => {
-    console.log('Buy now clicked for product:', productId);
-  };
-
   const handleAddToCart = (productId: number) => {
     console.log('Add to cart clicked for product:', productId);
   };
@@ -138,16 +134,8 @@ const ProductList: React.FC = () => {
                   </Card.Body>
                   <Card.Footer className="d-flex justify-content-between text-center">
                     <Button
-                      variant="warning"
-                      className="w-0 p-2 d-flex align-items-center"
-                      onClick={() => handleBuyNow(product.productId)}
-                    >
-                      <BsLightning className="mr-1" />
-                      Buy Now
-                    </Button>
-                    <Button
                       variant="primary"
-                      className="w-0 p-2 d-flex align-items-center"
+                      className=" d-flex align-items-center"
                       onClick={() => handleAddToCart(product.productId)}
                     >
                       <BsCartPlus className="mr-1" />
