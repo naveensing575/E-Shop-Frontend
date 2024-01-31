@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Container, Table, Image } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import CartButton from '../components/Cart/CartButton';
+
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const userInfo = localStorage.getItem('userInfo');
@@ -43,6 +45,7 @@ const CartPage: React.FC = () => {
             <th>Quantity</th>
             <th>Description</th>
             <th>Image</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -53,13 +56,15 @@ const CartPage: React.FC = () => {
               <td>{item.quantity}</td>
               <td>{item.product.productDescription}</td>
               <td>
-                {/* Add onClick event to the Image component */}
                 <Image
                   src={item.product.image}
                   alt={item.product.productName}
-                  style={{ width: '100px', cursor: 'pointer' }} // Add cursor pointer
-                  onClick={() => handleProductClick(item.product.productId)} // Call handleProductClick with product ID
+                  style={{ width: '100px', cursor: 'pointer' }}
+                  onClick={() => handleProductClick(item.product.productId)}
                 />
+              </td>
+              <td>
+                <CartButton productId={item.product.productId} initialQuantity={item.quantity} /> {/* Render the CartButton */}
               </td>
             </tr>
           ))}
