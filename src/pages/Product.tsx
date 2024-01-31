@@ -28,7 +28,6 @@ const Product: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [productDetails, setProductDetails] = useState<ProductProps | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [cartQuantity, setCartQuantity] = useState<number>(0);
 
   const fetchProductDetails = async () => {
     try {
@@ -57,21 +56,7 @@ const Product: React.FC = () => {
   }, [id]);
 
   const goBack = () => {
-    navigate('/products');
-  };
-
-  const onAdd = () => {
-    setCartQuantity(cartQuantity + 1);
-  };
-
-  const onRemove = () => {
-    if (cartQuantity > 0) {
-      setCartQuantity(cartQuantity - 1);
-    }
-  };
-
-  const onDelete = () => {
-    setCartQuantity(0);
+    navigate(-1);
   };
 
   return (
@@ -105,13 +90,12 @@ const Product: React.FC = () => {
                   </li>
                 ))}
               </ul>
+              <div className='w-25 mt-4'>
               <CartButton
-                initialQuantity={cartQuantity}
-                onAdd={onAdd}
-                onRemove={onRemove}
-                onDelete={onDelete}
-                isProductRoute={true}
+                productId={productDetails.productId}
+                initialQuantity={0}
               />
+              </div>
             </Col>
             <Col md={1}/>
           </Row>

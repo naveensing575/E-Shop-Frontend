@@ -20,8 +20,7 @@ const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sortCriteria, setSortCriteria] = useState<string>('priceDesc');
-  const [cartQuantity, setCartQuantity] = useState<number>(0);
+  const [sortCriteria, setSortCriteria] = useState<string>('priceAsc');
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -98,21 +97,6 @@ const ProductList: React.FC = () => {
     }
   };
 
-  const onAdd = () => {
-    setCartQuantity(cartQuantity + 1);
-  };
-
-  const onRemove = () => {
-    if (cartQuantity > 0) {
-      setCartQuantity(cartQuantity - 1);
-    }
-  };
-
-  const onDelete = () => {
-    setCartQuantity(0);
-  };
-
-
   return (
     <Container>
       <Row className="justify-content-between align-items-center">
@@ -143,13 +127,8 @@ const ProductList: React.FC = () => {
                   <Card.Text className="mb-3">{product.productDescription}</Card.Text>
                   <Card.Text>Price: ${product.price}</Card.Text>
                 </Card.Body>
-               <Card.Footer className="d-flex justify-content-center">
-                  <CartButton
-                    initialQuantity={cartQuantity}
-                    onAdd={onAdd}
-                    onRemove={onRemove}
-                    onDelete={onDelete}
-                  />
+                <Card.Footer className="d-flex justify-content-center">
+                  <CartButton productId={product.productId} initialQuantity={0}/>
                 </Card.Footer>
               </Card>
             </Col>

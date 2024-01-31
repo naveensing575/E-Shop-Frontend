@@ -23,14 +23,17 @@ const NavigationBar: React.FC = () => {
     navigate('/login');
   };
 
+  const handleSearchClick = (e: any) => {
+    e.preventDefault();
+  };
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
     queryParams.set('search', e.target.value);
     navigate(`${location.pathname}?${queryParams.toString()}`);
   };
 
-  // Check if the current route contains "/home" and "/products"
-  const isProductRoute = location.pathname.includes('/home') || location.pathname.includes('/products');
+  // Check if the current route contains "/home"
+  const isProductRoute = location.pathname.includes('/home');
 
   return (
     <Container fluid>
@@ -46,7 +49,7 @@ const NavigationBar: React.FC = () => {
             </Nav.Link>
           </Nav>
           {isProductRoute && (
-            <Form className="mx-auto d-flex">
+            <Form className="mx-auto d-flex" onSubmit={handleSearchClick}>
               <FormControl 
                 type="text" 
                 placeholder="Search" 
@@ -54,14 +57,16 @@ const NavigationBar: React.FC = () => {
                 value={searchValue}
                 onChange={handleSearchInputChange}
               />
-              <Button variant="outline-primary" className="mx-2 rounded-pill border-0" onClick={(e) => e.preventDefault()}>
+              <Button variant="outline-primary" 
+                className="mx-2 rounded-pill border-0" 
+                >
                 <MdSearch size={20}/>
               </Button>
             </Form>
           )}
           <Nav className="ml-auto">
             <Nav.Link as={Link} to="/cart" className="cart">
-              <BsCartPlus size={20} /> Cart
+              <BsCartPlus size={20} color='orange'/> Cart
             </Nav.Link>
             {token ? (
               <ProfileDropdown

@@ -1,46 +1,82 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { MdAdd, MdDelete } from 'react-icons/md';
+import axios from 'axios';
 
 interface CartButtonProps {
+  productId: number;
   initialQuantity: number;
-  onAdd: () => void;
-  onRemove: () => void;
-  onDelete: () => void;
-  isProductRoute?: boolean;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ initialQuantity, onAdd, onRemove, onDelete, isProductRoute = false }) => {
+const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity }) => {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
+  const userInfo = localStorage.getItem('userInfo');
+  const authToken = userInfo ? JSON.parse(userInfo).token : null;
 
-  const handleAdd = () => {
-    setQuantity(quantity + 1);
-    onAdd();
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
+
+  const handleAdd = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:4000/cart/add`,
+        { productId, quantity: 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setQuantity((prevQuantity) => prevQuantity + 1);
+      } else {
+        console.error('Failed to add item to cart');
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
   };
 
-  const handleRemove = () => {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
-      onRemove();
+  const handleRemove = async () => {
+    try {
+      if (quantity > 0) {
+        const response = await axios.post(
+          `http://localhost:4000/cart/remove`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setQuantity((prevQuantity) => prevQuantity - 1);
+        } else {
+          console.error('Failed to remove item from cart');
+        }
+      }
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
     }
   };
 
   return (
-    <ButtonGroup className={`d-flex align-items-center ${isProductRoute ? 'w-40' : 'w-100'}`}>
+    <ButtonGroup className="d-flex align-items-center w-100">
       {quantity === 0 ? (
-        <Button variant="warning" onClick={handleAdd} className='align-items-center'>
+        <Button variant="warning" onClick={handleAdd} className="align-items-center">
           Add to Cart
         </Button>
       ) : (
         <>
-          <Button variant="warning" onClick={handleRemove} className='align-items-center'>
+          <Button variant="warning" onClick={handleRemove} className="align-items-center">
             <MdDelete />
           </Button>
-          <Button variant="warning" disabled className='align-items-center'>
+          <Button variant="warning" disabled className="align-items-center">
             {quantity}
           </Button>
-          <Button variant="warning" onClick={handleAdd} className='align-items-center'>
-            <MdAdd />
+          <Button variant="warning" onClick={handleAdd} className="align-items-center">
+            <MdAdd /> Add More
           </Button>
         </>
       )}

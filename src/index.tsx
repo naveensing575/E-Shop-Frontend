@@ -10,6 +10,6 @@ const root = createRoot(container!);
 root.render(
 <StrictMode>
   <UserProvider>
-    <App />
+      <App />
   </UserProvider>
 </StrictMode>);
