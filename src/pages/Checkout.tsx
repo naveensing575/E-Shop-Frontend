@@ -48,7 +48,6 @@ useEffect(() => {
           setTotal(0);
         }
       } else {
-        // Invalid response format
         console.error('Invalid response format: cartItems array is missing');
       }
     } catch (error) {
@@ -63,7 +62,7 @@ useEffect(() => {
     const handlePlaceOrder = async () => {
     try {
       await axios.post(
-        'http://localhost:4000/order/create',
+        'http://localhost:4000/orders/create',
         {
           products: cartItems.map((item) => ({
             productId: item.product.productId,

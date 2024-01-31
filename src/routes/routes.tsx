@@ -8,8 +8,8 @@ import Product from '../pages/Product';
 import NavigationBar from '../components/Navbar/Navbar';
 import Categories from '../pages/Categories';
 import Cart from '../pages/Cart';
-import CheckoutPage from '../pages/Checkout';
 import Checkout from '../pages/Checkout';
+import OrdersHistory from '../pages/OrdersHistory';
 
 const isAuthenticated = () => {
   const userInfoString = localStorage.getItem('userInfo');
@@ -38,6 +38,7 @@ const AuthenticatedRoutes: React.FC = () => (
       <Route path='/categories' element={<PrivateRoute element={<Categories />} />} />
       <Route path='/cart' element={<PrivateRoute element={<Cart />} />} />
       <Route path='/checkout' element={<PrivateRoute element={<Checkout />} />} />
+      <Route path='/orders-history' element={<PrivateRoute element={<OrdersHistory />} />} />
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   </>

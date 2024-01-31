@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BsPersonFill } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileDropdownProps {
   userName: string;
@@ -8,11 +9,13 @@ interface ProfileDropdownProps {
   onLogoutClick: () => void;
 }
 
-const onOrdersClick = () => {
-  window.location.href = '/orders';
-};
 
 const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userName, userEmail, onLogoutClick }) => {
+  const navigate = useNavigate();
+  const onOrdersClick = () => {
+    navigate('/orders-history')
+  };
+
   return (
     <Dropdown>
       <Dropdown.Toggle
