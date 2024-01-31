@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Form, FormControl, Button, Container } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MdSearch } from 'react-icons/md';
-import { BsCartPlus } from 'react-icons/bs';
 import ProfileDropdown from '../Profile/Profile';
 import { useUser } from '../../contexts/userContext';
+import { useCart } from '../../contexts/cartContext';
+import { IoCart } from 'react-icons/io5';
+
 
 const NavigationBar: React.FC = () => {
   const { logout } = useUser();
@@ -35,6 +37,9 @@ const NavigationBar: React.FC = () => {
   // Check if the current route contains "/home"
   const isProductRoute = location.pathname.includes('/home');
 
+  // Get the cart count from CartContext
+  const { cartCount } = useCart();
+
   return (
     <Container fluid>
       <Navbar bg="light" expand="lg" className="px-3">
@@ -57,17 +62,17 @@ const NavigationBar: React.FC = () => {
                 value={searchValue}
                 onChange={handleSearchInputChange}
               />
-              <Button variant="outline-primary" 
-                className="mx-2 rounded-pill border-0" 
-                >
+              <Button variant="outline-primary" className="mx-2 rounded-pill border-0">
                 <MdSearch size={20}/>
               </Button>
             </Form>
           )}
           <Nav className="ml-auto">
-            <Nav.Link as={Link} to="/cart" className="cart">
-              <BsCartPlus size={20} color='orange'/> Cart
-            </Nav.Link>
+          <Nav.Link as={Link} to="/cart" className="cart position-relative mr-2">
+            <IoCart size={20} color='orange'/>
+            <strong className="position-absolute top-0 end-0" style={{ color: 'orange' }}>{cartCount}</strong>
+          </Nav.Link>
+
             {token ? (
               <ProfileDropdown
                 userName={ userName }

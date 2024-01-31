@@ -64,7 +64,7 @@ const CartPage: React.FC = () => {
                 />
               </td>
               <td>
-                <CartButton productId={item.product.productId} initialQuantity={item.quantity} /> {/* Render the CartButton */}
+                <CartButton productId={item.product.productId} initialQuantity={item.quantity} />
               </td>
             </tr>
           ))}
