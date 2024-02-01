@@ -92,7 +92,7 @@ useEffect(() => {
 
   return (
     <Container>
-      <h1 className="mt-3 mb-5">Checkout</h1>
+      <h1 className="mt-3 mb-5 font">Checkout</h1>
       {cartItems && cartItems.length > 0 && <Table striped bordered hover>
         <thead>
           <tr>

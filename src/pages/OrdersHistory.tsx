@@ -36,10 +36,10 @@ const OrdersHistory = () => {
 
   return (
     <Container>
-      <h1 className="mt-3 mb-5">Orders History</h1>
-      {purchaseHistory.map((order: any) => (
+      <h1 className="mt-3 mb-5 font">Orders History</h1>
+      {purchaseHistory.map((order: any, index: number) => (
         <div key={order.purchaseHistoryId} className="mb-5">
-          <h3>Order ID: {order.purchaseHistoryId}</h3>
+          <h3>Order ID: {index+1}</h3>
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -63,7 +63,7 @@ const OrdersHistory = () => {
           <p>Total Amount: ${order.purchasedProducts.reduce((total: number, product: any) => {
             return total + product.quantity * product.product.price;
           }, 0).toFixed(2)}</p>
-          <p>Date: {formatDisplayDate(order.purchasedProducts[0].purchasedDate)}</p> {/* Displaying Formatted Date */}
+          <p>Date: {formatDisplayDate(order.purchasedProducts[0].purchasedDate)}</p>
         </div>
       ))}
     </Container>

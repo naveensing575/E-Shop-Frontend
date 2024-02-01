@@ -8,9 +8,12 @@ import { useLocation } from 'react-router-dom';
 interface CartButtonProps {
   productId: number;
   initialQuantity: number;
+  onCartItemRemoved?: (productId: number) => void;
+  onCartItemAdded?: (price: number) => void;
+  price?: number; 
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity }) => {
+const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity, onCartItemRemoved, onCartItemAdded, price }) => {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   const { handleCartUpdate } = useCart();
   const userInfo = localStorage.getItem('userInfo');
@@ -36,7 +39,8 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity }) =
       );
       if (response.status === 200) {
         setQuantity((prevQuantity) => prevQuantity + 1);
-        handleCartUpdate(1); 
+        handleCartUpdate(1);
+        if (onCartItemAdded && price !== undefined) onCartItemAdded(price);
       } else {
         console.error('Failed to add item to cart');
       }
@@ -45,55 +49,56 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity }) =
     }
   };
 
-  const handleRemove = async () => {
-    try {
-      if (quantity > 0) {
-        const response = await axios.put(
-          `http://localhost:4000/cart/update/${productId}`,
-          { quantity: quantity - 1 },
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          setQuantity((prevQuantity) => prevQuantity - 1);
-          handleCartUpdate(-1); 
-        } else {
-          console.error('Failed to update item quantity in cart');
-        }
-      }
-    } catch (error) {
-      console.error('Error updating item quantity in cart:', error);
-    }
-  };
 
- const handleDelete = async () => {
+ const handleRemove = async () => {
   try {
-    if (quantity === 1) {
-      // Perform delete action only when the quantity is 1
-      const response = await axios.delete(`http://localhost:4000/cart/delete/${productId}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      if (response.status === 204) {
-        setQuantity(0);
-        handleCartUpdate(-quantity); 
+    if (quantity > 0) {
+      const response = await axios.put(
+        `http://localhost:4000/cart/update/${productId}`,
+        { quantity: quantity - 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setQuantity((prevQuantity) => prevQuantity - 1);
+        handleCartUpdate(-1);
+        if (onCartItemRemoved && price !== undefined) onCartItemRemoved(price);
       } else {
-        console.error('Failed to remove item from cart. Status:', response.status);
+        console.error('Failed to update item quantity in cart');
       }
-    } else {
-      // If quantity is greater than 1, perform item removal instead of delete
-      setQuantity((prevQuantity) => prevQuantity - 1);
-      handleCartUpdate(-1); 
     }
   } catch (error) {
-    console.error('Error removing item from cart:', error);
+    console.error('Error updating item quantity in cart:', error);
   }
 };
 
+
+  const handleDelete = async () => {
+    try {
+      if (quantity === 1) {
+        const response = await axios.delete(`http://localhost:4000/cart/delete/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (response.status === 204) {
+          setQuantity(0);
+          handleCartUpdate(-quantity);
+          if (onCartItemRemoved) onCartItemRemoved(productId);
+        } else {
+          console.error('Failed to remove item from cart. Status:', response.status);
+        }
+      } else {
+        setQuantity((prevQuantity) => prevQuantity - 1);
+        handleCartUpdate(-1);
+      }
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+    }
+  };
 
   return (
     <ButtonGroup className="d-flex align-items-center w-100">
@@ -115,7 +120,7 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity }) =
           <Button variant="warning" disabled className="align-items-center">
             {quantity}
           </Button>
-           <Button variant="warning" onClick={handleAdd} className="align-items-center">
+          <Button variant="warning" onClick={handleAdd} className="align-items-center">
             <MdAdd /> {!isProductRoute && 'Add More'}
           </Button>
         </>
