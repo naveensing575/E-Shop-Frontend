@@ -21,36 +21,53 @@ const ProductList: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriteria, setSortCriteria] = useState<string>('priceAsc');
+  const [error, setError] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('search') ?? '';
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const userInfo = localStorage.getItem('userInfo');
-        const authToken = userInfo ? JSON.parse(userInfo).token : null;
-        const response = await axios.get(`http://localhost:4000/products`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
+  const fetchProducts = async () => {
+  try {
+    const userInfo = localStorage.getItem('userInfo');
+    const authToken = userInfo ? JSON.parse(userInfo).token : null;
+    const response = await axios.get(`http://localhost:4000/products`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
 
-        if (response.status === 200) {
-          setProducts(response.data);
-        } else {
-          console.error('Failed to fetch products:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (response.status === 200) {
+      setProducts(response.data);
+    } else {
+      console.error('Failed to fetch products:', response.statusText);
+    }
+  } catch (error: any) {
+    if (error.response && error.response.status === 403) {
+      handleForbiddenError(error);
+    } else {
+      console.error('Error fetching products:', error.response?.data?.error || error.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
-    fetchProducts();
-  }, []);
+const handleForbiddenError = (error: any) => {
+  const errorMessage = error.response.data?.error;
+  if (errorMessage === 'Forbidden - Invalid Token') {
+    // Show alert and redirect to login page
+    setError('You are not authorized. Please login again.');
+    navigate('/login');
+  } else {
+    console.error('Error fetching products:', errorMessage);
+  }
+};
+
+useEffect(() => {
+  fetchProducts();
+}, []);
+
 
   useEffect(() => {
     const filterAndSortProducts = () => {
@@ -97,46 +114,55 @@ const ProductList: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+  if (loading) {
+    return <Loader />;
+  } 
+  if (error) {
+    return <Alert variant="danger">{error}</Alert>;
+  }
+  if (filteredProducts.length === 0) {
+    return <Alert variant="info">No products found for "{searchQuery}"</Alert>;
+  }
   return (
-    <Container>
-      <Row className="justify-content-between align-items-center">
-        <Col xs={12} md={6}>
-          <h2 className="mt-3 font">Today's Deals</h2>
+    <Row xs={1} md={2} lg={3} xl={4}>
+      {filteredProducts.map((product) => (
+        <Col key={product.productId} className="mb-4">
+          <Card className="product-card">
+            <Image
+              src={product?.image || NoProductImage}
+              alt="Product"
+              className="card-image"
+              onClick={() => handleProductDetails(product.productId)}
+            />
+            <Card.Body className="card-body" onClick={() => handleProductDetails(product.productId)}>
+              <Card.Title>{product.productName}</Card.Title>
+              <Card.Text className="mb-3">{product.productDescription}</Card.Text>
+              <Card.Text>Price: ${product.price}</Card.Text>
+            </Card.Body>
+            <Card.Footer className="d-flex justify-content-center">
+              <CartButton productId={product.productId} initialQuantity={0}/>
+            </Card.Footer>
+          </Card>
         </Col>
-        <Col xs={12} md={6} className="text-md-right mt-3 mt-md-0">
-          <SortProducts onChange={handleSortChange} />
-        </Col>
-      </Row>
-      {loading ? (
-        <Loader />
-      ) : filteredProducts.length === 0 ? (
-        <Alert variant="info">No products found for "{searchQuery}"</Alert>
-      ) : (
-        <Row xs={1} md={2} lg={3} xl={4}>
-          {filteredProducts.map((product) => (
-            <Col key={product.productId} className="mb-4">
-              <Card className="product-card">
-                <Image
-                  src={product?.image || NoProductImage}
-                  alt="Product"
-                  className="card-image"
-                  onClick={() => handleProductDetails(product.productId)}
-                />
-                <Card.Body className="card-body" onClick={() => handleProductDetails(product.productId)}>
-                  <Card.Title>{product.productName}</Card.Title>
-                  <Card.Text className="mb-3">{product.productDescription}</Card.Text>
-                  <Card.Text>Price: ${product.price}</Card.Text>
-                </Card.Body>
-                <Card.Footer className="d-flex justify-content-center">
-                  <CartButton productId={product.productId} initialQuantity={0}/>
-                </Card.Footer>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      )}
-    </Container>
+      ))}
+    </Row>
   );
+};
+
+return (
+  <Container>
+    <Row className="justify-content-between align-items-center">
+      <Col xs={12} md={6}>
+        <h2 className="mt-3 font">Today's Deals</h2>
+      </Col>
+      <Col xs={12} md={6} className="text-md-right mt-3 mt-md-0">
+        <SortProducts onChange={handleSortChange} />
+      </Col>
+    </Row>
+    {renderContent()}
+  </Container>
+);
 };
 
 export default ProductList;
