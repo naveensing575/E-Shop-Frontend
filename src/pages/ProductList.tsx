@@ -114,6 +114,14 @@ useEffect(() => {
     }
   };
 
+  const truncateDescription = (description: string, maxLength: number = 25) => {
+  if (description.length > maxLength) {
+    return `${description.substring(0, maxLength)}...`;
+  }
+  return description;
+};
+
+
   const renderContent = () => {
   if (loading) {
     return <Loader />;
@@ -137,7 +145,7 @@ useEffect(() => {
             />
             <Card.Body className="card-body" onClick={() => handleProductDetails(product.productId)}>
               <Card.Title>{product.productName}</Card.Title>
-              <Card.Text className="mb-3">{product.productDescription}</Card.Text>
+              <Card.Text className="mb-3">{truncateDescription(product.productDescription)}</Card.Text>
               <Card.Text>Price: ${product.price}</Card.Text>
             </Card.Body>
             <Card.Footer className="d-flex justify-content-center">
