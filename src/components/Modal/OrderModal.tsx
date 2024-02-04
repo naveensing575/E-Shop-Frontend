@@ -38,7 +38,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose }) => {
     <Modal show={isOpen} onHide={onClose} centered>
       <Modal.Body className="modal-body">
         {isLoading ? (
-          <Spinner animation="border" role="status">
+          <Spinner animation="border" role="output" variant='primary'>
             <span className="sr-only">Loading...</span>
           </Spinner>
         ) : (

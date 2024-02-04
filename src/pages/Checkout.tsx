@@ -61,6 +61,7 @@ const CheckoutPage = () => {
 
 
   const handlePlaceOrder = async () => {
+    setShowModal(true);
     try {
       await axios.post(
         'http://localhost:4000/orders/create',
@@ -80,8 +81,6 @@ const CheckoutPage = () => {
 
       // Call updateCartCount with 0 to clear the cart count after placing the order
       updateCartCount(0);
-
-      setShowModal(true);
     } catch (error) {
       console.error('Error placing order:', error);
     }
