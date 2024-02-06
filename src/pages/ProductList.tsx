@@ -127,59 +127,67 @@ const ProductList: React.FC = () => {
   };
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber); 
+    setCurrentPage(pageNumber);
+  };
+
+  useEffect(() => {
+    // Reset current page to 1 when a search query is entered
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const renderPagination = () => {
+    return (
+      <Pagination>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
+            {i + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+    );
   };
 
   const renderContent = () => {
-  if (loading) {
-    return <Loader />;
-  }
-  if (error) {
-    return <Alert variant="danger">{error}</Alert>;
-  }
-  if (filteredProducts.length === 0) {
-    return <Alert variant="info">No products found for "{searchQuery}"</Alert>;
-  }
-  return (
-    <Row xs={1} md={2} lg={3} xl={4}>
-      {filteredProducts.map((product) => (
-        <Col key={product.productId} className="mb-4">
-          <Card className="product-card">
-            <Image
-              src={product?.image || NoProductImage}
-              alt="Product"
-              className="card-image"
-              onClick={() => handleProductDetails(product.productId)}
-            />
-            <Card.Body className="card-body" onClick={() => handleProductDetails(product.productId)}>
-              <Card.Title>{product.productName}</Card.Title>
-              <Card.Text className="mb-3">{truncateDescription(product.productDescription)}</Card.Text>
-              <Card.Text>Price: ${product.price}</Card.Text>
-            </Card.Body>
-            <Card.Footer className="d-flex justify-content-center">
-              <CartButton productId={product.productId} initialQuantity={0} />
-            </Card.Footer>
-          </Card>
-        </Col>
-      ))}
-    </Row>
-  );
-};
-
-const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-const renderPagination = () => {
-  return (
-    <Pagination>
-      {Array.from({ length: totalPages }, (_, i) => (
-        <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
-          {i + 1}
-        </Pagination.Item>
-      ))}
-    </Pagination>
-  );
-};
-
+    if (loading) {
+      return <Loader />;
+    }
+    if (error) {
+      return <Alert variant="danger">{error}</Alert>;
+    }
+    if (currentProducts.length === 0) {
+      return <Alert variant="info">No products found for "{searchQuery}"</Alert>;
+    }
+    return (
+      <Row xs={1} md={2} lg={3} xl={4}>
+        {currentProducts.map((product) => (
+          <Col key={product.productId} className="mb-4">
+            <Card className="product-card">
+              <Image
+                src={product?.image || NoProductImage}
+                alt="Product"
+                className="card-image"
+                onClick={() => handleProductDetails(product.productId)}
+              />
+              <Card.Body className="card-body" onClick={() => handleProductDetails(product.productId)}>
+                <Card.Title>{product.productName}</Card.Title>
+                <Card.Text className="mb-3">{truncateDescription(product.productDescription)}</Card.Text>
+                <Card.Text>Price: ${product.price}</Card.Text>
+              </Card.Body>
+              <Card.Footer className="d-flex justify-content-center">
+                <CartButton productId={product.productId} initialQuantity={0} />
+              </Card.Footer>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    );
+  };
 
   return (
     <Container>
