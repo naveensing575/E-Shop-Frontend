@@ -6,33 +6,35 @@ import GoBackBtn from '../components/Button/GoBackBtn';
 
 const OrderDetails = () => {
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
-  const [orderId, setOrderId] = useState<number>(0);
+  const [orderId, setOrderId] = useState<number>();
   const authToken = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!).token : null;
 
-   useEffect(() => {
+  useEffect(() => {
+    if (orderId) { // Check if orderId exists
+      const fetchOrderDetails = async () => {
+        try {
+          const response = await axios.get(`http://localhost:4000/orders/${orderId}`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+          setPurchaseHistory(response.data.purchasedProducts);
+        } catch (error) {
+          console.error('Error fetching order details:', error);
+        }
+      };
+
+      fetchOrderDetails();
+    }
+  }, [orderId, authToken]);
+
+  useEffect(() => {
     // Get orderId from URL
     const orderId = window.location.pathname.split('/').pop();
     if (orderId) {
       setOrderId(parseInt(orderId));
     }
   }, []);
-
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:4000/orders/${orderId}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setPurchaseHistory(response.data.purchasedProducts);
-      } catch (error) {
-        console.error('Error fetching order details:', error);
-      }
-    };
-
-    fetchOrderDetails();
-  }, [orderId, authToken]);
 
   return (
     <Container>
