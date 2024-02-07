@@ -10,6 +10,7 @@ import Categories from '../pages/Categories';
 import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
 import OrdersHistory from '../pages/OrdersHistory';
+import OrderDetails from '../pages/OrderDetails';
 
 const isAuthenticated = () => {
   const userInfoString = localStorage.getItem('userInfo');
@@ -19,7 +20,6 @@ const isAuthenticated = () => {
   }
   return false;
 };
-
 
 const PrivateRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
   return isAuthenticated() ? (
@@ -39,6 +39,7 @@ const AuthenticatedRoutes: React.FC = () => (
       <Route path='/cart' element={<PrivateRoute element={<Cart />} />} />
       <Route path='/checkout' element={<PrivateRoute element={<Checkout />} />} />
       <Route path='/orders-history' element={<PrivateRoute element={<OrdersHistory />} />} />
+      <Route path='/orders/:id' element={<PrivateRoute element={<OrderDetails />} />} />
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   </>
