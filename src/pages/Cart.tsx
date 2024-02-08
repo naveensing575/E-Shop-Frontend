@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table, Image, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import CartButton from '../components/Cart/CartButton';
 import { CSSTransition } from 'react-transition-group';
+import CartButton from '../components/Cart/CartButton';
+import cartService from '../services/cartService';
 
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
   const [showEmptyCartMessage, setShowEmptyCartMessage] = useState(false);
-  const userInfo = localStorage.getItem('userInfo');
-  const authToken = userInfo ? JSON.parse(userInfo).token : null;
+  const [totalPrice, setTotalPrice] = useState<number>(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/cart`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (response.data.cartItems.length === 0) {
+        const items = await cartService.fetchCartItem();
+        if (items.length === 0) {
           setShowEmptyCartMessage(true);
           setCartItems([]);
           setTotalPrice(0);
         } else {
-          setCartItems(response.data.cartItems);
-          calculateTotalPrice(response.data.cartItems);
+          setCartItems(items);
+          calculateTotalPrice(items);
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);

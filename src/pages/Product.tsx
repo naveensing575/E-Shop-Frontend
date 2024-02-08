@@ -61,7 +61,9 @@ const Product: React.FC = () => {
 
     return (
         <Row>
-          <GoBackBtn />
+          <Row className='mt-4 mb-4'>
+            <GoBackBtn />
+          </Row>
           <Col md={1} />
           <Col md={4} className='text-center'>
             <Image src={productDetails.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3' />
