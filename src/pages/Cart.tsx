@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table, Image, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { fetchCartItems } from '../services/cartService';
 import CartButton from '../components/Cart/CartButton';
 import { CSSTransition } from 'react-transition-group';
 
@@ -14,28 +14,24 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCartItems = async () => {
+    const fetchCartItemsData = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/cart`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (response.data.cartItems.length === 0) {
+        const cartItems = await fetchCartItems(authToken);
+        if (cartItems.length === 0) {
           setShowEmptyCartMessage(true);
           setCartItems([]);
           setTotalPrice(0);
         } else {
-          setCartItems(response.data.cartItems);
-          calculateTotalPrice(response.data.cartItems);
+          setCartItems(cartItems);
+          calculateTotalPrice(cartItems);
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);
       }
     };
 
-    fetchCartItems();
-  }, []);
+    fetchCartItemsData();
+  }, [authToken]);
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -62,15 +58,14 @@ const CartPage: React.FC = () => {
   };
 
   const handleCartItemRemoved = (productId: number) => {
-  const removedItem = cartItems.find((item) => item.product.productId === productId);
-  if (removedItem) {
-    const removedPrice = removedItem.product.price * removedItem.quantity;
-    setCartItems((prevCartItems) =>
-      prevCartItems.filter((item) => item.product.productId !== productId)
-    );
-    setTotalPrice((prevTotalPrice) => prevTotalPrice - removedPrice);
+  const updatedCartItems = cartItems.filter(item => item.product.productId !== productId);
+  setCartItems(updatedCartItems);
+
+  if (updatedCartItems.length === 0) {
+    setShowEmptyCartMessage(true);
   }
 };
+
 
   const handleCartItemAdded = (price: number) => {
     // Recalculate total price whenever an item is added

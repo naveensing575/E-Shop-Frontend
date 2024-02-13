@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Col, Container, Row, Table } from 'react-bootstrap';
 import { formatDisplayDate } from '../utils/formatDate';
 import GoBackBtn from '../components/Button/GoBackBtn';
+import { fetchOrderDetails } from '../services/orderService';
 
 const OrderDetails = () => {
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
@@ -10,26 +10,20 @@ const OrderDetails = () => {
   const authToken = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!).token : null;
 
   useEffect(() => {
-    if (orderId) { // Check if orderId exists
-      const fetchOrderDetails = async () => {
+    if (orderId) {
+      const fetchDetails = async () => {
         try {
-          const response = await axios.get(`http://localhost:4000/orders/${orderId}`, {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          });
-          setPurchaseHistory(response.data.purchasedProducts);
+          const details = await fetchOrderDetails(orderId, authToken);
+          setPurchaseHistory(details);
         } catch (error) {
           console.error('Error fetching order details:', error);
         }
       };
-
-      fetchOrderDetails();
+      fetchDetails();
     }
   }, [orderId, authToken]);
 
   useEffect(() => {
-    // Get orderId from URL
     const orderId = window.location.pathname.split('/').pop();
     if (orderId) {
       setOrderId(parseInt(orderId));

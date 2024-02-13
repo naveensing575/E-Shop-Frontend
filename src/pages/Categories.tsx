@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import axios from 'axios';
+import { fetchCategories } from '../services/categoryService';
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
+  const userInfo = localStorage.getItem('userInfo');
+  const authToken = userInfo ? JSON.parse(userInfo).token : null;
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesData = async () => {
       try {
-        const userInfo = localStorage.getItem('userInfo');
-        const authToken = userInfo ? JSON.parse(userInfo).token : null;
-        const response = await axios.get<string[]>('http://localhost:4000/products/categories', {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setCategories(response.data);
+        const data = await fetchCategories(authToken);
+        setCategories(data);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
 
-    fetchCategories();
-  }, []);
+    fetchCategoriesData();
+  }, [authToken]);
 
   return (
     <Container>

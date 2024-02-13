@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Image, Alert, Pagination } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { fetchProducts } from '../services/productService';
 import NoProductImage from '../assets/default.png';
 import Loader from '../components/Loader/Loader';
 import SortProducts from '../components/SortProducts/SortProducts';
@@ -30,31 +30,18 @@ const ProductList: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('search') ?? '';
 
-  const fetchProducts = async () => {
+  const fetchProductsData = async () => {
     try {
       const userInfo = localStorage.getItem('userInfo');
       const authToken = userInfo ? JSON.parse(userInfo).token : null;
-      const response = await axios.get(`http://localhost:4000/products`, {
-        params: {
-          page: currentPage,
-          limit: productsPerPage,
-        },
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (response.status === 200) {
-        setProducts(response.data.products);
-        setTotalPages(response.data.totalPages);
-      } else {
-        console.error('Failed to fetch products:', response.statusText);
-      }
+      const data = await fetchProducts(currentPage, productsPerPage, authToken);
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
     } catch (error: any) {
       if (error.response && error.response.status === 403) {
         handleForbiddenError(error);
       } else {
-        console.error('Error fetching products:', error.response?.data?.error || error.message);
+        setError(error.response?.data?.error || error.message);
       }
     } finally {
       setLoading(false);
@@ -72,14 +59,14 @@ const ProductList: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [currentPage, searchQuery])
+    fetchProductsData();
+  }, [currentPage, productsPerPage]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
 
-    useEffect(() => {
+  useEffect(() => {
     const filterAndSortProducts = () => {
       let filteredProducts = [...products];
       // Filter products based on search query

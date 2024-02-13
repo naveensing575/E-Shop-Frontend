@@ -1,14 +1,19 @@
-import axiosInstance from '../utils/axiosInstance';
+import axios from 'axios';
 
-const cartService = {
-  fetchCartItem: async () => {
-    try {
-      const response = await axiosInstance.get('/cart');
+export async function fetchCartItems(authToken: string) {
+  try {
+    const response = await axios.get(`http://localhost:4000/cart`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    if (response.status === 200) {
       return response.data.cartItems;
-    } catch (error) {
-      throw new Error('Error fetching cart items');
+    } else {
+      throw new Error(`Failed to fetch cart items: ${response.statusText}`);
     }
-  },
-};
-
-export default cartService;
+  } catch (error: any) {
+    throw error;
+  }
+}

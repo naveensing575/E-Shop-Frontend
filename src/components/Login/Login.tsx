@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useUser } from "../../contexts/userContext";
 import { Container, Row, Col, Card, Form as BootstrapForm, Button } from "react-bootstrap";
+import { login } from "../../services/authService";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -14,7 +15,7 @@ const LoginSchema = Yup.object().shape({
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useUser();
+  const { login: contextLogin } = useUser();
 
   const handleLogin = async (values: any, actions: any) => {
     try {
@@ -28,21 +29,12 @@ const Login: React.FC = () => {
       const userEmail = user?.email ?? '';
       const userName = user?.email?.trimEnd()?.split('@')[0] ?? '';
 
-      login(userName, userEmail, await user?.getIdToken());
+      // Call the login function from authService
+      await login(email, password, await user?.getIdToken());
 
-      const response = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${await user?.getIdToken()}`,
-        },
-      });
+      contextLogin(userName, userEmail, await user?.getIdToken());
 
-      if (response.ok) {
-        navigate("/home");
-      } else {
-        throw new Error("Invalid email or password");
-      }
+      navigate("/home");
       actions.resetForm();
     } catch (error) {
       console.error("Login error:", error);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { fetchProductDetails } from '../services/productDetailService';
 import NoProductImage from '../assets/default.png';
 import ratingStars from '../utils/ratingStars';
 import Loader from '../components/Loader/Loader';
@@ -29,21 +29,12 @@ const Product: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchProductDetails = async () => {
+    const fetchProductDetailsData = async () => {
       try {
         const userInfo = localStorage.getItem('userInfo');
         const authToken = userInfo ? JSON.parse(userInfo).token : null;
-        const response = await axios.get<ProductProps>(`http://localhost:4000/products/${id}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-
-        if (response.status === 200) {
-          setProductDetails(response.data);
-        } else {
-          console.error('Failed to fetch product details:', response.statusText);
-        }
+        const data = await fetchProductDetails(Number(id), authToken);
+        setProductDetails(data);
       } catch (error) {
         console.error('Error fetching product details:', error);
       } finally {
@@ -51,7 +42,7 @@ const Product: React.FC = () => {
       }
     };
 
-    fetchProductDetails();
+    fetchProductDetailsData();
   }, [id]);
 
   const renderProductDetails = () => {
@@ -60,37 +51,37 @@ const Product: React.FC = () => {
     }
 
     return (
-        <Row>
-          <Row className='mt-4 mb-4'>
-            <GoBackBtn />
-          </Row>
-          <Col md={1} />
-          <Col md={4} className='text-center'>
-            <Image src={productDetails.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3' />
-          </Col>
-          <Col md={1} />
-          <Col md={5}>
-            <h2>{productDetails.productName}</h2>
-            <p>{productDetails.productDetails}</p>
-            <p>Price: ${productDetails.price}</p>
-            <div className="mr-2">Rating: {productDetails.rating} {ratingStars(productDetails.rating)}</div>
-            <p>Reviews:</p>
-            <ul>
-              {productDetails.reviews.map((review, index) => (
-                <li key={index}>
-                  <strong>{review.user}:</strong> {review.comment}
-                </li>
-              ))}
-            </ul>
-            <div className='w-25 mt-4'>
-              <CartButton
-                productId={productDetails.productId}
-                initialQuantity={0}
-              />
-            </div>
-          </Col>
-          <Col md={1} />
+      <Row>
+        <Row className='mt-4 mb-4'>
+          <GoBackBtn />
         </Row>
+        <Col md={1} />
+        <Col md={4} className='text-center'>
+          <Image src={productDetails.image || NoProductImage} alt="Product" fluid className='align-items-center float-right mr-3' />
+        </Col>
+        <Col md={1} />
+        <Col md={5}>
+          <h2>{productDetails.productName}</h2>
+          <p>{productDetails.productDetails}</p>
+          <p>Price: ${productDetails.price}</p>
+          <div className="mr-2">Rating: {productDetails.rating} {ratingStars(productDetails.rating)}</div>
+          <p>Reviews:</p>
+          <ul>
+            {productDetails.reviews.map((review, index) => (
+              <li key={index}>
+                <strong>{review.user}:</strong> {review.comment}
+              </li>
+            ))}
+          </ul>
+          <div className='w-25 mt-4'>
+            <CartButton
+              productId={productDetails.productId}
+              initialQuantity={0}
+            />
+          </div>
+        </Col>
+        <Col md={1} />
+      </Row>
     );
   };
 

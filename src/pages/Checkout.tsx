@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table, Button, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
 import { useCart } from '../contexts/cartContext';
 import OrderModal from '../components/Modal/OrderModal';
 import GoBackBtn from '../components/Button/GoBackBtn';
+import { fetchCartItems } from '../services/cartService';
+import { placeOrder } from '../services/orderService';
 
 interface CartItem {
   cartItemId: number;
@@ -24,60 +25,25 @@ const CheckoutPage = () => {
   const authToken = userInfo ? JSON.parse(userInfo).token : null;
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const response = await axios.get(`http://localhost:4000/cart`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
+    const fetchCartItemsData = async () => {
+      const fetchedCartItems = await fetchCartItems(authToken);
+      setCartItems(fetchedCartItems);
 
-        // Check if response contains cartItems array
-        if (Array.isArray(response.data.cartItems)) {
-          // Response contains an array of cart items
-          setCartItems(response.data.cartItems);
-
-          // Calculate total price if cartItems array is not empty
-          if (response.data.cartItems.length > 0) {
-            const totalPrice = response.data.cartItems.reduce(
-              (total: number, item: CartItem) => total + item.product.price * item.quantity,
-              0
-            );
-            setTotal(totalPrice);
-          } else {
-            // No cart items, set total price to 0
-            setTotal(0);
-          }
-        } else {
-          console.error('Invalid response format: cartItems array is missing');
-        }
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
+      const totalPrice = fetchedCartItems.reduce(
+        (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
+        0
+      );
+      setTotal(totalPrice);
     };
 
-    fetchCartItems();
-  }, []);
+    fetchCartItemsData();
+  }, [authToken]);
 
 
   const handlePlaceOrder = async () => {
     setShowModal(true);
     try {
-      await axios.post(
-        'http://localhost:4000/orders/create',
-        {
-          products: cartItems.map((item) => ({
-            productId: item.product.productId,
-            quantity: item.quantity,
-            subtotal: item.product.price * item.quantity,
-          })),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      await placeOrder(authToken, cartItems);
 
       // Call updateCartCount with 0 to clear the cart count after placing the order
       updateCartCount(0);
