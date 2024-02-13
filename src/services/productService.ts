@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function fetchProducts(page: number, limit: number, authToken: string) {
   try {
-    const response = await axios.get(`http://localhost:4000/products`, {
+    const response = await axios.get(`/products`, {
       params: {
         page,
         limit,

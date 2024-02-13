@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const fetchPurchaseHistory = async (authToken: string | null) => {
   try {
-    const response = await axios.get('http://localhost:4000/orders/history', {
+    const response = await axios.get('/orders/history', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

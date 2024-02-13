@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function fetchCategories(authToken: string) {
   try {
-    const response = await axios.get<string[]>('http://localhost:4000/products/categories', {
+    const response = await axios.get<string[]>('/products/categories', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function fetchCartItems(authToken: string) {
   try {
-    const response = await axios.get(`http://localhost:4000/cart`, {
+    const response = await axios.get(`/cart`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

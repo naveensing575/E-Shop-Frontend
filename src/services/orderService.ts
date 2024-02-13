@@ -3,7 +3,7 @@ import axios from 'axios';
 export const placeOrder = async (authToken: string, cartItems: any[]) => {
   try {
     await axios.post(
-      'http://localhost:4000/orders/create',
+      '/orders/create',
       {
         products: cartItems.map((item) => ({
           productId: item.product.productId,
@@ -24,7 +24,7 @@ export const placeOrder = async (authToken: string, cartItems: any[]) => {
 
 export const fetchOrderDetails = async (orderId: number, authToken: string | null) => {
   try {
-    const response = await axios.get(`http://localhost:4000/orders/${orderId}`, {
+    const response = await axios.get(`/orders/${orderId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

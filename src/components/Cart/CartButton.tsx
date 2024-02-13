@@ -29,7 +29,7 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity, onC
   const handleAdd = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:4000/cart/add`,
+        `/cart/add`,
         { productId, quantity: 1 },
         {
           headers: {
@@ -54,7 +54,7 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity, onC
   try {
     if (quantity > 0) {
       const response = await axios.put(
-        `http://localhost:4000/cart/update/${productId}`,
+        `/cart/update/${productId}`,
         { quantity: quantity - 1 },
         {
           headers: {
@@ -79,7 +79,7 @@ const CartButton: React.FC<CartButtonProps> = ({ productId, initialQuantity, onC
   const handleDelete = async () => {
     try {
       if (quantity === 1) {
-        const response = await axios.delete(`http://localhost:4000/cart/delete/${productId}`, {
+        const response = await axios.delete(`/cart/delete/${productId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },

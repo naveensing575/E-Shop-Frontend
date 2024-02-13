@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function fetchProductDetails(productId: number, authToken: string) {
   try {
-    const response = await axios.get(`http://localhost:4000/products/${productId}`, {
+    const response = await axios.get(`/products/${productId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

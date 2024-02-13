@@ -59,7 +59,7 @@ const Register: React.FC = () => {
     }),
     onSubmit: async (values, {resetForm}) => {
       try {
-        const response = await axios.post('http://localhost:4000/register', {
+        const response = await axios.post('/register', {
           ...values,
           address: {
             flat: values.address.flat,
