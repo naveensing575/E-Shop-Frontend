@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table } from 'react-bootstrap';
+import { Container, Row, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { formatDisplayDate } from '../utils/formatDate';
 import { fetchPurchaseHistory } from '../services/orderHistoryService';
+import GoBackBtn from '../components/Button/GoBackBtn';
+import Loader from '../components/Loader/Loader';
 
 const OrdersHistory = () => {
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const userInfo = localStorage.getItem('userInfo');
   const authToken = userInfo ? JSON.parse(userInfo).token : null;
 
@@ -16,6 +19,8 @@ const OrdersHistory = () => {
         setPurchaseHistory(history);
       } catch (error) {
         console.error('Error fetching purchase history:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -24,8 +29,12 @@ const OrdersHistory = () => {
 
   return (
     <Container>
+      <Row className='mt-4 mb-4'>
+          <GoBackBtn />
+      </Row>
       <h1 className="mt-3 mb-5 font">Orders History</h1>
-      {purchaseHistory ? (
+      {isLoading ? <Loader/>
+        : purchaseHistory.length > 0 ? (
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -51,7 +60,7 @@ const OrdersHistory = () => {
           </tbody>
         </Table>
       ) : (
-        <p>No order details found.</p>
+        <p>No orders purchased.</p>
       )}
     </Container>
   );

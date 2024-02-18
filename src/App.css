@@ -65,3 +65,11 @@
   color: blue;
 }
 
+.category-card {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+}

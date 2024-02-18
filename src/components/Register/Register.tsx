@@ -2,30 +2,15 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ToastComponent from '../Toasts/Toast';
-
-interface FormValues {
-  email: string;
-  password: string;
-  phoneNumber: string;
-  firstName: string;
-  lastName: string;
-  address: {
-    flat: string;
-    street: string;
-    city: string;
-    country: string;
-    zipcode: string;
-  };
-}
+import { registerUser } from '../../services/registerService';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
 
-  const formik = useFormik<FormValues>({
+  const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
@@ -57,34 +42,19 @@ const Register: React.FC = () => {
         zipcode: Yup.string().required('Zipcode is Required'),
       }).required('Address is Required'),
     }),
-    onSubmit: async (values, {resetForm}) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
-        const response = await axios.post('/register', {
-          ...values,
-          address: {
-            flat: values.address.flat,
-            street: values.address.street,
-            city: values.address.city,
-            country: values.address.country,
-            zipcode: values.address.zipcode,
-          },
-        });
-
-        if (response.status === 201) {
-           resetForm();
-          setShowToast(true);
-          setTimeout(() => {
-            navigate('/login');
-          }, 3000);
-        } else {
-          console.error('Registration failed:', response.data.error || 'Unknown error');
-        }
+        await registerUser(values);
+        resetForm();
+        setShowToast(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
       } catch (error: any) {
         console.error('Registration error:', error.message || 'Unknown error');
       }
     },
   });
-
   return (
     <Container>
       <Row className="justify-content-center">

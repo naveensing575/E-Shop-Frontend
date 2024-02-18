@@ -5,6 +5,7 @@ import OrderModal from '../components/Modal/OrderModal';
 import GoBackBtn from '../components/Button/GoBackBtn';
 import { fetchCartItems } from '../services/cartService';
 import { placeOrder } from '../services/orderService';
+import Loader from '../components/Loader/Loader';
 
 interface CartItem {
   cartItemId: number;
@@ -20,25 +21,31 @@ const CheckoutPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { updateCartCount } = useCart();
   const userInfo = localStorage.getItem('userInfo');
   const authToken = userInfo ? JSON.parse(userInfo).token : null;
 
   useEffect(() => {
     const fetchCartItemsData = async () => {
-      const fetchedCartItems = await fetchCartItems(authToken);
-      setCartItems(fetchedCartItems);
+      try {
+        const fetchedCartItems = await fetchCartItems(authToken);
+        setCartItems(fetchedCartItems);
 
-      const totalPrice = fetchedCartItems.reduce(
-        (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
-        0
-      );
-      setTotal(totalPrice);
+        const totalPrice = fetchedCartItems.reduce(
+          (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
+          0
+        );
+        setTotal(totalPrice);
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchCartItemsData();
   }, [authToken]);
-
 
   const handlePlaceOrder = async () => {
     setShowModal(true);
@@ -65,7 +72,7 @@ const CheckoutPage = () => {
       </Row>
 
       <h1 className="mt-3 mb-5 font">Checkout</h1>
-      {cartItems && cartItems.length > 0 && (
+      {isLoading ? <Loader/> : cartItems && cartItems.length > 0 ? (
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -94,6 +101,8 @@ const CheckoutPage = () => {
             </tr>
           </tbody>
         </Table>
+      ) : (
+        <p>No items in the cart.</p>
       )}
       <Button variant="primary" onClick={handlePlaceOrder}>
         Place Order

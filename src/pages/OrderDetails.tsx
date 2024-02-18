@@ -3,10 +3,12 @@ import { Col, Container, Row, Table } from 'react-bootstrap';
 import { formatDisplayDate } from '../utils/formatDate';
 import GoBackBtn from '../components/Button/GoBackBtn';
 import { fetchOrderDetails } from '../services/orderService';
+import Loader from '../components/Loader/Loader';
 
 const OrderDetails = () => {
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
   const [orderId, setOrderId] = useState<number>();
+  const [isLoading, setIsLoading] = useState(true);
   const authToken = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!).token : null;
 
   useEffect(() => {
@@ -17,6 +19,8 @@ const OrderDetails = () => {
           setPurchaseHistory(details);
         } catch (error) {
           console.error('Error fetching order details:', error);
+        } finally {
+          setIsLoading(false);
         }
       };
       fetchDetails();
@@ -38,7 +42,7 @@ const OrderDetails = () => {
         </Col>
       </Row>
       <h1 className="mt-3 mb-5 font">Order Details</h1>
-      {purchaseHistory.length > 0 ? (
+      {isLoading ? <Loader/> : purchaseHistory.length > 0 ? (
         <>
           <Table striped bordered hover>
             <thead>
