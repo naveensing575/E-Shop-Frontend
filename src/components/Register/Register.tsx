@@ -1,162 +1,143 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import register from '../../services/register';
+import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
-interface FormValues {
-  email: string;
-  password: string;
-  phoneNo: string;
-  firstName: string;
-  lastName: string;
-  dob: string;
-  flat: string;
-  street: string;
-  city: string;
-  country: string;
-  zipcode: string;
-}
+import ToastComponent from '../Toasts/Toast';
+import { registerUser } from '../../services/registerService';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  // Initialize formik with form values type
-  const formik = useFormik<FormValues>({
+  const [showToast, setShowToast] = useState(false);
+
+  const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
-      phoneNo: '',
+      phoneNumber: '',
       firstName: '',
       lastName: '',
-      dob: '',
-      flat: '',
-      street: '',
-      city: '',
-      country: '',
-      zipcode: '',
+      address: {
+        flat: '',
+        street: '',
+        city: '',
+        country: '',
+        zipcode: '',
+      },
     },
     validationSchema: Yup.object({
       email: Yup.string().email('Invalid email address').required('Required'),
-      password: Yup.string().required('Required').min(6, 'Password must be at least 6 characters'),
-      phoneNo: Yup.string().required('Required'),
-      firstName: Yup.string().required('Required'),
-      lastName: Yup.string().required('Required'),
-      dob: Yup.string().required('Required'),
-      flat: Yup.string().required('Required'),
-      street: Yup.string().required('Required'),
-      city: Yup.string().required('Required'),
-      country: Yup.string().required('Required'),
-      zipcode: Yup.string().required('Required'),
+      password: Yup.string().required('Password is Required').min(6, 'Password must be at least 6 characters'),
+      phoneNumber: Yup
+        .string()
+        .matches(/^\+?[0-9]{1,4}-?[0-9]{6,14}$/, 'Invalid phone number format')
+        .required('Phone number is required'),
+      firstName: Yup.string().required('First Name Required'),
+      lastName: Yup.string().required('Last Name Required'),
+      address: Yup.object({
+        flat: Yup.string().required('Flat is Required'),
+        street: Yup.string().required('Street is Required'),
+        city: Yup.string().required('City is Required'),
+        country: Yup.string().required('Country is Required'),
+        zipcode: Yup.string().required('Zipcode is Required'),
+      }).required('Address is Required'),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
-        await register.register(values);
-
-        // Registration successful, redirect to login page
-        navigate('/login');
-      } catch (error) {
-        console.error('Registration error:', error);
+        await registerUser(values);
+        resetForm();
+        setShowToast(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      } catch (error: any) {
+        console.error('Registration error:', error.message || 'Unknown error');
       }
     },
   });
-
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={formik.handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input type="email" {...formik.getFieldProps('email')} />
-          {formik.touched.email && formik.errors.email ? (
-            <div className="error">{formik.errors.email}</div>
-          ) : null}
-        </div>
+    <Container>
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <h2 className="mt-3 mb-3">Register</h2>
+          <Form onSubmit={formik.handleSubmit}>
+            <Form.Group controlId="email">
+              <Form.Label>Email:</Form.Label>
+              <Form.Control type="email" {...formik.getFieldProps('email')} />
+              <Form.Text className="text-danger">{formik.touched.email && formik.errors.email}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Password:</label>
-          <input type="password" {...formik.getFieldProps('password')} />
-          {formik.touched.password && formik.errors.password ? (
-            <div className="error">{formik.errors.password}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="password">
+              <Form.Label>Password:</Form.Label>
+              <Form.Control type="password" {...formik.getFieldProps('password')} />
+              <Form.Text className="text-danger">{formik.touched.password && formik.errors.password}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Phone Number:</label>
-          <input type="text" {...formik.getFieldProps('phoneNo')} />
-          {formik.touched.phoneNo && formik.errors.phoneNo ? (
-            <div className="error">{formik.errors.phoneNo}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="phoneNumber">
+              <Form.Label>Phone Number:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('phoneNumber')} />
+              <Form.Text className="text-danger">{formik.touched.phoneNumber && formik.errors.phoneNumber}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>First Name:</label>
-          <input type="text" {...formik.getFieldProps('firstName')} />
-          {formik.touched.firstName && formik.errors.firstName ? (
-            <div className="error">{formik.errors.firstName}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="firstName">
+              <Form.Label>First Name:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('firstName')} />
+              <Form.Text className="text-danger">{formik.touched.firstName && formik.errors.firstName}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Last Name:</label>
-          <input type="text" {...formik.getFieldProps('lastName')} />
-          {formik.touched.lastName && formik.errors.lastName ? (
-            <div className="error">{formik.errors.lastName}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="lastName">
+              <Form.Label>Last Name:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('lastName')} />
+              <Form.Text className="text-danger">{formik.touched.lastName && formik.errors.lastName}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Date of Birth:</label>
-          <input type="date" {...formik.getFieldProps('dob')} />
-          {formik.touched.dob && formik.errors.dob ? (
-            <div className="error">{formik.errors.dob}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="flat">
+              <Form.Label>Flat/House/Apartment:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('address.flat')} />
+              <Form.Text className="text-danger">{formik.touched.address?.flat && formik.errors.address?.flat}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Flat/House/Apartment:</label>
-          <input type="text" {...formik.getFieldProps('flat')} />
-          {formik.touched.flat && formik.errors.flat ? (
-            <div className="error">{formik.errors.flat}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="street">
+              <Form.Label>Street:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('address.street')} />
+              <Form.Text className="text-danger">{formik.touched.address?.street && formik.errors.address?.street}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Street:</label>
-          <input type="text" {...formik.getFieldProps('street')} />
-          {formik.touched.street && formik.errors.street ? (
-            <div className="error">{formik.errors.street}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="city">
+              <Form.Label>City:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('address.city')} />
+              <Form.Text className="text-danger">{formik.touched.address?.city && formik.errors.address?.city}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>City:</label>
-          <input type="text" {...formik.getFieldProps('city')} />
-          {formik.touched.city && formik.errors.city ? (
-            <div className="error">{formik.errors.city}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="country">
+              <Form.Label>Country:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('address.country')} />
+              <Form.Text className="text-danger">{formik.touched.address?.country && formik.errors.address?.country}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Country:</label>
-          <input type="text" {...formik.getFieldProps('country')} />
-          {formik.touched.country && formik.errors.country ? (
-            <div className="error">{formik.errors.country}</div>
-          ) : null}
-        </div>
+            <Form.Group controlId="zipcode">
+              <Form.Label>Zipcode:</Form.Label>
+              <Form.Control type="text" {...formik.getFieldProps('address.zipcode')} />
+              <Form.Text className="text-danger">{formik.touched.address?.zipcode && formik.errors.address?.zipcode}</Form.Text>
+            </Form.Group>
 
-        <div>
-          <label>Zipcode:</label>
-          <input type="text" {...formik.getFieldProps('zipcode')} />
-          {formik.touched.zipcode && formik.errors.zipcode ? (
-            <div className="error">{formik.errors.zipcode}</div>
-          ) : null}
-        </div>
-
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
+            <Button variant="primary" type="submit" disabled={formik.isSubmitting} className='mt-3'>
+              {formik.isSubmitting ? 'Registering...' : 'Register'}
+            </Button>
+          </Form>
+           <p className="mt-3">
+                Already have an account? <a href="/login">Login here</a>
+            </p>
+           <ToastComponent
+            show={showToast}
+            onClose={() => setShowToast(false)}
+            header="Registration Successful"
+            body="You have successfully registered. Please login with your credentials."
+            bg="success"
+          />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

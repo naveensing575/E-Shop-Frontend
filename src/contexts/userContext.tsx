@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UserContextProps {
-  uid?: string;
-  name?: string;
-  email?: string;
-  updateUserInfo: (uid: string, name: string, email: string) => void;
-  clearUserInfo: () => void;
+  user: {
+    name?: string;
+    email?: string;
+    token?: string;
+  };
+  updateUserInfo: (name: string, email: string, token: string) => void;
+  logout: () => void;
+  login: (name: string, email: string, token: string) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -15,28 +18,30 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [uid, setUid] = useState<string | undefined>(undefined);
-  const [name, setName] = useState<string | undefined>(undefined);
-  const [email, setEmail] = useState<string | undefined>(undefined);
+  const [user, setUser] = useState<{ name?: string; email?: string; token?: string }>({});
 
-  const updateUserInfo = (newUid: string, newName: string, newEmail: string) => {
-    setUid(newUid);
-    setName(newName);
-    setEmail(newEmail);
+  const updateUserInfo = (name: string, email: string, token: string) => {
+    const newUser = { name, email, token };
+    setUser(newUser);
+    // Save user info to localStorage
+    localStorage.setItem('userInfo', JSON.stringify(newUser));
   };
 
-  const clearUserInfo = () => {
-    setUid(undefined);
-    setName(undefined);
-    setEmail(undefined);
+  const logout = () => {
+    setUser({});
+    // Remove user info from localStorage
+    localStorage.removeItem('userInfo');
+  };
+
+  const login = (name: string, email: string, token: string) => {
+    updateUserInfo(name, email, token);
   };
 
   const contextValue: UserContextProps = {
-    uid,
-    name,
-    email,
+    user,
     updateUserInfo,
-    clearUserInfo,
+    logout,
+    login,
   };
 
   return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;

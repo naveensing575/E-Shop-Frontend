@@ -1,7 +1,5 @@
-import React from 'react';
-import './App.css';
 import Root from './routes/routes';
-
+import './App.css';
 function App() {
   return (
       <Root/>

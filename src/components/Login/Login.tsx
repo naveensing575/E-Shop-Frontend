@@ -5,6 +5,8 @@ import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useUser } from "../../contexts/userContext";
+import { Container, Row, Col, Card, Form as BootstrapForm, Button } from "react-bootstrap";
+import { login } from "../../services/authService";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -13,7 +15,7 @@ const LoginSchema = Yup.object().shape({
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserInfo } = useUser();
+  const { login: contextLogin } = useUser();
 
   const handleLogin = async (values: any, actions: any) => {
     try {
@@ -24,83 +26,63 @@ const Login: React.FC = () => {
 
       // Get the ID token from the userCredential
       const user = userCredential.user;
-      const uid = user?.uid || '';
-      const displayName = user?.displayName ??'';
       const userEmail = user?.email ?? '';
+      const userName = user?.email?.trimEnd()?.split('@')[0] ?? '';
 
-      // Update user information using the context, including uid
-      updateUserInfo(uid, displayName, userEmail);
+      // Call the login function from authService
+      await login(email, password, await user?.getIdToken());
 
-      // Send the ID token to the backend for further verification
-      const response = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken: await user?.getIdToken() }),
-      });
+      contextLogin(userName, userEmail, await user?.getIdToken());
 
-      if (response.ok) {
-        console.log("Logged in successfully");
-        console.log(user);
-        // Redirect to /home
-        navigate("/home");
-      } else {
-        // Handle login error
-        throw new Error("Invalid email or password");
-      }
-
-      // Reset the form
+      navigate("/home");
       actions.resetForm();
     } catch (error) {
-      // Handle login error
       console.error("Login error:", error);
-
-      // Set a custom error message in the form
       actions.setFieldError("password", "Invalid email or password");
     } finally {
-      // Set submitting to false to enable the form button
       actions.setSubmitting(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={LoginSchema}
-        onSubmit={handleLogin}
-      >
-        {(formikProps) => (
-          <Form className="login-form">
-            <label>Email:</label>
-            <Field type="email" name="email" required />
-            <ErrorMessage
-              name="email"
-              component="div"
-              className="error-message"
-            />
+    <Container fluid className="h-100 mt-5">
+      <Row className="h-100 justify-content-center align-items-center">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <h1 className="text-center mb-4">E-Shop</h1>
+              <Formik
+                initialValues={{ email: "", password: "" }}
+                validationSchema={LoginSchema}
+                onSubmit={handleLogin}
+              >
+                {(formikProps) => (
+                  <Form>
+                    <div className="mb-3">
+                      <Field type="email" name="email" as={BootstrapForm.Control} placeholder="Email" />
+                      <ErrorMessage name="email" component="div" className="text-danger" />
+                    </div>
 
-            <label>Password:</label>
-            <Field type="password" name="password" required />
-            <ErrorMessage
-              name="password"
-              component="div"
-              className="error-message"
-            />
+                    <div className="mb-3">
+                      <Field type="password" name="password" as={BootstrapForm.Control} placeholder="Password" />
+                      <ErrorMessage name="password" component="div" className="text-danger" />
+                    </div>
 
-            <button type="submit" disabled={formikProps.isSubmitting}>
-              {formikProps.isSubmitting ? "Logging in..." : "Login"}
-            </button>
-          </Form>
-        )}
-      </Formik>
+                    <Button type="submit" className="w-100" disabled={formikProps.isSubmitting}>
+                      {formikProps.isSubmitting ? "Logging in..." : "Login"}
+                    </Button>
+                  </Form>
+                )}
+              </Formik>
 
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
-    </div>
+              <p className="mt-3 text-center">
+                Don't have an account? <Link to="/register">Register here</Link>
+              </p>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

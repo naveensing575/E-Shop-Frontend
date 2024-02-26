@@ -1,13 +1,10 @@
-import React from 'react'
-import Logout from '../components/Logout/Logout'
+import React from 'react';
+import ProductList from './ProductList';
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
-    <div>
-      Welcome to E-Shop 
-      <Logout/>
-    </div>
-  )
-}
+      <ProductList />
+  );
+};
 
-export default Home
+export default Home;
